@@ -15,9 +15,9 @@
 
 	<div class="container-fluid hero d-flex align-items-center">
 	    <div class="container text-center text-white">
-	        <h1 class="display-4">Bienvenido a Mi App</h1>
-	        <p class="lead">Una descripción breve y convincente de tu aplicación.</p>
-	        <a href="#" class="btn btn-primary btn-lg">Iniciar</a>
+	        <h1 class="display-4">Bienvenido a DiarioDePesas</h1>
+	        <p class="lead">Una app para seguir tus mejoras diarias</p>
+	        <a href="./signup" class="btn btn-dark btn-lg">Crear cuenta</a>
 	    </div>
 	</div>
 

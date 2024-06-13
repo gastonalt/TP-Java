@@ -18,8 +18,11 @@
 	    </ul>
 	    <form class="form-inline my-2 my-lg-0">
 	      <a class="btn my-2 my-sm-0" href="#">Iniciar sesión</a>
-	      <a class="btn btn-primary my-2 my-sm-0" href="./signup">Crear cuenta</a>
+	      <a class="btn btn-dark my-2 my-sm-0" href="./signup">Crear cuenta</a>
 	    </form>
 	  </div>
 	</nav>
 </header>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
