@@ -18,7 +18,7 @@
 	    </ul>
 	    <form class="form-inline my-2 my-lg-0">
 	      <a class="btn my-2 my-sm-0" href="#">Iniciar sesión</a>
-	      <a class="btn btn-dark my-2 my-sm-0" href="./signup">Crear cuenta</a>
+	      <a class="btn btn-dark my-2 my-sm-0" href="./signup">Crear una nueva cuenta</a>
 	    </form>
 	  </div>
 	</nav>
