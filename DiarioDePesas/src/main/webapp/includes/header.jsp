@@ -1,3 +1,12 @@
+<%@page import="com.gastonalt.diariodepesas.model.Usuario"%>
+<%
+    Usuario usuario = (Usuario) session.getAttribute("usuario");
+    if (usuario != null) {
+    	getServletContext().log("Usuario en sesión: " + usuario.getUsername());
+    } else {
+    	getServletContext().log("No hay usuario en sesión.");
+    }
+%>
 <header>
 	<nav class="navbar navbar-expand-lg navbar-light bg-light">
 	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
@@ -9,17 +18,36 @@
 	      <li class="nav-item active">
 	        <a class="nav-link" href="./">Home</a>
 	      </li>
+             <%
+                 if (usuario != null) {
+             %>    
 	      <li class="nav-item">
 	        <a class="nav-link" href="./localidades">Localidades</a>
 	      </li>
 	      <li class="nav-item">
 	        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Músculos</a>
 	      </li>
+            <%
+                }
+            %>
 	    </ul>
+            <%
+                if (usuario == null) {
+            %>  
 	    <form class="form-inline my-2 my-lg-0">
-	      <a class="btn my-2 my-sm-0" href="#">Iniciar sesión</a>
+	      <a class="btn my-2 my-sm-0" href="./login">Iniciar sesión</a>
 	      <a class="btn btn-dark my-2 my-sm-0" href="./signup">Crear una nueva cuenta</a>
 	    </form>
+			<%
+			    } else {
+			%>
+		<form class="form-inline my-2 my-lg-0">
+			      <a class="btn my-2 my-sm-0" href="<%=request.getContextPath()%>/user">Editar perfil</a>
+		    <a class="btn btn-dark my-2 my-sm-0" href="./logout">Cerrar sesión</a>
+		</form>
+			<%
+			    }
+			%>
 	  </div>
 	</nav>
 </header>

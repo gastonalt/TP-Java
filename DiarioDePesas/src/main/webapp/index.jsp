@@ -1,6 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%
+    if (session.getAttribute("usuario")  != null) {
+        response.sendRedirect(request.getContextPath() + "/dashboard");
+    }
+%>
 <html>
 <head>
 <title>DiarioDePesas</title>

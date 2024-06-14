@@ -15,10 +15,20 @@
 	<div class="container col-md-5">
 		<div class="card">
 			<div class="card-body">
-				<form action="<%=request.getContextPath()%>/signup" method="post">
+				<c:if test="${usuario == null}">
+					<form action="<%=request.getContextPath()%>/signup" method="post">
+	   			</c:if>
+				<c:if test="${usuario != null}">
+					<form action="<%=request.getContextPath()%>/user" method="post">
+				</c:if>
 				<caption>
 					<h2>
+  						<c:if test="${usuario == null}">
             			Crear usuario
+            			</c:if>
+  						<c:if test="${usuario != null}">
+  						Editar perfil
+  						</c:if>
 					</h2>
 				</caption>
 				<c:if test="${errorMensaje != null}">
@@ -31,51 +41,69 @@
 					<div class="alert alert-success" role="alert">
 					  <c:out value='${exitoMensaje}' />
 					</div>
+					<c:if test="${volverLink != null}">
+						<a href="<%=request.getContextPath()%>/<c:out value='${volverLink}' />">< Volver</a>
+					</c:if>
+					<c:if test="${inicarSesionLink != null}">
+						<a href="<%=request.getContextPath()%>/<c:out value='${inicarSesionLink}' />">< Iniciar sesión</a>
+					</c:if>
 				</c:if>
 				<c:if test="${exitoMensaje == null}">
 					<fieldset class="form-group">
 						<label>Nombre de usuario</label> <input type="text"
-							class="form-control"
+							class="form-control" value="<c:out value='${usuario.username}' />"
 							name="username" required="required">
-	
-						<label>Contraseña</label> <input type="password"
-							class="form-control"
-							name="password" required="required">
-	
-						<label>Repetir contraseña</label> <input type="password"
-							class="form-control"
-							name="repassword" required="required">
-	
+						<c:if test="${usuario == null}">
+							<label>Contraseña</label> <input type="password"
+								class="form-control"
+								name="password" required="required">
+		
+							<label>Repetir contraseña</label> <input type="password"
+								class="form-control"
+								name="repassword" required="required">
+						</c:if>
 						<label>Nombre</label> <input type="text"
-							class="form-control"
+							class="form-control" value="<c:out value='${usuario.nombre}' />"
 							name="nombre" required="required">
 	
 						<label>Apellido</label> <input type="text"
-							class="form-control"
+							class="form-control" value="<c:out value='${usuario.apellido}' />"
 							name="apellido" required="required">
 	
 						<label>Fecha de nacimiento</label> <input type="date"
 							data-date-format="dd/mm/yyyy"
-							class="form-control"
+							class="form-control" value="<c:out value='${usuario.fechaNacimiento}' />"
 							name="fechaNac" required="required">
 	
 						<label>Localidad</label><select name="localidad" class="form-control">
-						  <option  selected >Seleccione una localidad</option>
+	  						<c:if test="${usuario == null}">
+						  		<option  selected >Seleccione una localidad</option>
+            				</c:if>
+	  						<c:if test="${usuario != null}">
+						  		<option selected value="<c:out value="${usuario.getLocalidad().cod_postal}" />"><c:out value="${usuario.getLocalidad().nombre}" /></option>
+            				</c:if>
 							<c:forEach var="loc" items="${localidadesList}">
 							  <option value="<c:out value="${loc.cod_postal}" />"><c:out value="${loc.nombre}" /></option>
 							</c:forEach>
 						</select>
 	
 						<label>Direccion</label> <input type="text"
-							class="form-control"
+							class="form-control" value="<c:out value='${usuario.direccion}' />"
 							name="direccion" required="required">
 	
 						<label>Email</label> <input type="text"
-							class="form-control"
+							class="form-control" value="<c:out value='${usuario.email}' />"
 							name="email" required="required">
 							
 					</fieldset>
-					<button type="submit" class="btn btn-success">Crear</button>
+					<button type="submit" class="btn btn-success">
+ 						<c:if test="${usuario == null}">
+ 						Crear cuenta
+ 						</c:if>
+  						<c:if test="${usuario != null}">
+  						Guardar perfil
+  						</c:if>
+					</button>
 				</c:if>
 				</form>
 			</div>

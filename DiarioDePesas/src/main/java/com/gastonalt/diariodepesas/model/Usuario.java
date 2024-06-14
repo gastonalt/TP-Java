@@ -28,6 +28,19 @@ public class Usuario {
 		this.localidad = localidad;
 	}
 	
+	public Usuario(int id_usuario, String username, String nombre, String apellido,
+			Date fechaNacimiento, String direccion, String email, Localidad localidad) {
+		super();
+		this.id_usuario = id_usuario;
+		this.username = username;
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.fechaNacimiento = fechaNacimiento;
+		this.direccion = direccion;
+		this.email = email;
+		this.localidad = localidad;
+	}
+	
 	public Usuario(String username, String password, String nombre, String apellido,
 			Date fechaNacimiento, String direccion, String email, Localidad localidad) {
 		super();

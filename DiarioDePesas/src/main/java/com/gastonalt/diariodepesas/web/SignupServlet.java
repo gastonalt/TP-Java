@@ -77,6 +77,7 @@ public class SignupServlet extends HttpServlet {
 				List<Localidad> localidadesList = localidadDao.selectAllLocalidades();
 				request.setAttribute("localidadesList", localidadesList);
 		        request.setAttribute("exitoMensaje", "Usuario creado con éxito.");
+		        request.setAttribute("inicarSesionLink", "login.jsp");
 				RequestDispatcher dispatcher = request.getRequestDispatcher(signup);
 				dispatcher.forward(request, response);
 			} catch (SQLException e) {

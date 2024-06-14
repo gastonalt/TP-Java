@@ -94,7 +94,6 @@ public class LocalidadServlet extends HttpServlet {
 		RequestDispatcher dispatcher = request.getRequestDispatcher(form);
 		request.setAttribute("localidad", localidadBD);
 		dispatcher.forward(request, response);
-
 	}
 	
 	private void insertLocalidad(HttpServletRequest request, HttpServletResponse response) 
