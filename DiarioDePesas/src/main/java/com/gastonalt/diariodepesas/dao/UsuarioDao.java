@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Date;
+import org.mindrot.jbcrypt.BCrypt;
 
 import com.gastonalt.diariodepesas.model.Localidad;
 import com.gastonalt.diariodepesas.model.Usuario;
@@ -17,12 +18,12 @@ public class UsuarioDao {
 	private static final String INSERT_USUARIOS_SQL = 
 	    "INSERT INTO usuarios (username, password, nombre, apellido, fecha_nacimiento, direccion, email, localidad_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 	private static final String SELECT_USUARIO_BY_USERNAME = 
-	    "SELECT u.id_usuario, u.username, u.nombre, u.apellido, u.fecha_nacimiento, u.direccion, u.email, l.cod_postal, l.nombre AS localidad_nombre " +
+	    "SELECT u.id_usuario, u.username, u.nombre, u.apellido, u.fecha_nacimiento, u.direccion, u.email, u.isAdmin, l.cod_postal, l.nombre AS localidad_nombre " +
 	    "FROM usuarios u " +
 	    "JOIN localidades l ON u.localidad_id = l.cod_postal " +
 	    "WHERE u.username = ?;";
 	private static final String SELECT_ALL_USUARIOS = 
-	    "SELECT u.id_usuario, u.username, u.password, u.nombre, u.apellido, u.fecha_nacimiento, u.direccion, u.email, l.cod_postal, l.nombre AS localidad_nombre " +
+	    "SELECT u.id_usuario, u.username, u.nombre, u.apellido, u.fecha_nacimiento, u.direccion, u.email, l.cod_postal, l.nombre AS localidad_nombre " +
 	    "FROM usuarios u " +
 	    "JOIN localidades l ON u.localidad_id = l.cod_postal;";
 	private static final String DELETE_USUARIO_SQL = 
@@ -31,7 +32,7 @@ public class UsuarioDao {
 	    "UPDATE usuarios SET username = ?, nombre = ?, apellido = ?, fecha_nacimiento = ?, direccion = ?, email = ?, localidad_id = ? WHERE id_usuario = ?;";
 	
 	private static final String FIND_USUARIO_LOGIN_SQL =
-		"SELECT COUNT(*) AS user_count FROM usuarios WHERE username = ? AND password = ?";
+			"SELECT COUNT(*) AS user_count, password FROM usuarios WHERE username = ?";
 
 
 	public UsuarioDao() {
@@ -41,13 +42,13 @@ public class UsuarioDao {
 		System.out.println(INSERT_USUARIOS_SQL);
 		try (Connection connection = DatabaseUtils.getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(INSERT_USUARIOS_SQL)) {
-			preparedStatement.setString(1, usuario.getUsername());
+			preparedStatement.setString(1, usuario.getUsername().toLowerCase());
 			preparedStatement.setString(2, usuario.getPassword());
 			preparedStatement.setString(3, usuario.getNombre());
 			preparedStatement.setString(4, usuario.getApellido());
 			preparedStatement.setDate(5, (Date) usuario.getFechaNacimiento());
 			preparedStatement.setString(6, usuario.getDireccion());
-			preparedStatement.setString(7, usuario.getEmail());
+			preparedStatement.setString(7, usuario.getEmail().toLowerCase());
 			preparedStatement.setInt(8, usuario.getLocalidad().getCod_postal());
 			System.out.println(preparedStatement);
 			preparedStatement.executeUpdate();
@@ -61,7 +62,7 @@ public class UsuarioDao {
 		Usuario usuario = null;
 		try (Connection connection = DatabaseUtils.getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(SELECT_USUARIO_BY_USERNAME);) {
-			preparedStatement.setString(1, username);
+			preparedStatement.setString(1, username.toLowerCase());
 			System.out.println(preparedStatement);
 			ResultSet rs = preparedStatement.executeQuery();
 			while (rs.next()) {
@@ -71,10 +72,11 @@ public class UsuarioDao {
 				Date fechaNacimiento = rs.getDate("fecha_nacimiento");
 				String direccion = rs.getString("direccion");
 				String email = rs.getString("email");
+				boolean isAdmin = rs.getBoolean("isAdmin");
 				int cod_postal = rs.getInt("cod_postal");
 				String nombreLocalidad = rs.getString("localidad_nombre");
 				localidad = new Localidad(cod_postal, nombreLocalidad);
-				usuario = new Usuario(id_usuario, username, nombre, apellido, fechaNacimiento, direccion, email, localidad);
+				usuario = new Usuario(id_usuario, username, nombre, apellido, fechaNacimiento, direccion, email, isAdmin, localidad);
 			}
 		} catch (SQLException e) {
 			DatabaseUtils.printSQLException(e);
@@ -82,21 +84,24 @@ public class UsuarioDao {
 		return usuario;
 	}
 	
-	public boolean checkUserCredentials(String username, String password) {
-		int usersFound = 0;
-		try (Connection connection = DatabaseUtils.getConnection();
-		PreparedStatement preparedStatement = connection.prepareStatement(FIND_USUARIO_LOGIN_SQL);) {
-			preparedStatement.setString(1, username);
-			preparedStatement.setString(2, password);
-			ResultSet rs = preparedStatement.executeQuery();
-			while (rs.next()) {
-				usersFound = rs.getInt("user_count");
-			}
-		} catch (SQLException e) {
-			DatabaseUtils.printSQLException(e);
-		}
-		return usersFound == 1;
-	}
+    public boolean checkUserCredentials(String username, String password) {
+        String hashedPasswordFromDB = null;
+        try (Connection connection = DatabaseUtils.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_USUARIO_LOGIN_SQL)) {
+            preparedStatement.setString(1, username.toLowerCase());
+            ResultSet rs = preparedStatement.executeQuery();
+            if (rs.next()) {
+                hashedPasswordFromDB = rs.getString("password");
+            }
+        } catch (SQLException e) {
+            DatabaseUtils.printSQLException(e);
+        }
+        
+        if (hashedPasswordFromDB == null) {
+            return false;
+        }
+        return BCrypt.checkpw(password, hashedPasswordFromDB);
+    }
 	
 	public List<Usuario> selectAllUsuarios() {
 		List<Usuario> usuarios = new ArrayList<>();
@@ -105,17 +110,16 @@ public class UsuarioDao {
 			System.out.println(preparedStatement);
 			ResultSet rs = preparedStatement.executeQuery();
 			while (rs.next()) {
-				int id_usuario = rs.getInt("username");
-				String username = rs.getString("username");
-				String password = rs.getString("password");
+				int id_usuario = rs.getInt("id_usuario");
+				String username = rs.getString("username").toLowerCase();
 				String nombre = rs.getString("nombre");
 				String apellido = rs.getString("apellido");
 				Date fechaNacimiento = rs.getDate("fecha_nacimiento");
 				String direccion = rs.getString("direccion");
-				String email = rs.getString("email");
+				String email = rs.getString("email").toLowerCase();
 				int cod_postal = rs.getInt("cod_postal");
 				String nombreLocalidad = rs.getString("localidad_nombre");
-				usuarios.add(new Usuario(id_usuario, username, password, nombre, apellido, fechaNacimiento, direccion, email, new Localidad(cod_postal, nombreLocalidad)));
+				usuarios.add(new Usuario(id_usuario, username, nombre, apellido, fechaNacimiento, direccion, email, new Localidad(cod_postal, nombreLocalidad)));
 			}
 		} catch (SQLException e) {
 			DatabaseUtils.printSQLException(e);
@@ -138,12 +142,12 @@ public class UsuarioDao {
 		try (Connection connection = DatabaseUtils.getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_USUARIO_SQL);) {
 			System.out.println("Usuario actualizado:"+preparedStatement);
-			preparedStatement.setString(1, usuario.getUsername());
+			preparedStatement.setString(1, usuario.getUsername().toLowerCase());
 			preparedStatement.setString(2, usuario.getNombre());
 			preparedStatement.setString(3, usuario.getApellido());
 			preparedStatement.setDate(4, (Date) usuario.getFechaNacimiento());
 			preparedStatement.setString(5, usuario.getDireccion());
-			preparedStatement.setString(6, usuario.getEmail());
+			preparedStatement.setString(6, usuario.getEmail().toLowerCase());
 			preparedStatement.setInt(7, usuario.getLocalidad().getCod_postal());
 			preparedStatement.setInt(8, usuario.getId_usuario());
 
@@ -158,7 +162,7 @@ public class UsuarioDao {
 	    
 	    try (Connection connection = DatabaseUtils.getConnection();
 	         PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-	        preparedStatement.setString(1, username);
+	        preparedStatement.setString(1, username.toLowerCase());
 	        
 	        ResultSet rs = preparedStatement.executeQuery();
 	        if (rs.next()) {
@@ -180,7 +184,7 @@ public class UsuarioDao {
 	    
 	    try (Connection connection = DatabaseUtils.getConnection();
 	         PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-	        preparedStatement.setString(1, email);
+	        preparedStatement.setString(1, email.toLowerCase());
 	        
 	        ResultSet rs = preparedStatement.executeQuery();
 	        if (rs.next()) {

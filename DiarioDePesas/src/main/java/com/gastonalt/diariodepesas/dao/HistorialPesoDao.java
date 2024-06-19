@@ -74,6 +74,7 @@ public class HistorialPesoDao {
 		List<HistorialPeso> historialPeso = new ArrayList<>();
 		try (Connection connection = DatabaseUtils.getConnection();
 			PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_HISTORIALPESOS_SQL);) {
+			preparedStatement.setLong(1, id_usuario);
 			System.out.println(preparedStatement);
 			ResultSet rs = preparedStatement.executeQuery();
 			while (rs.next()) {

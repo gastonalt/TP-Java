@@ -25,12 +25,17 @@ public class LoginServlet extends HttpServlet {
     String index="index.jsp";
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Usuario usuarioLogged = (Usuario) request.getSession().getAttribute("usuario");
+	    if (usuarioLogged != null) {
+	        response.sendRedirect(request.getContextPath() + "/dashboard");
+	        return;
+	    }
 		RequestDispatcher dispatcher = request.getRequestDispatcher(login);
 		dispatcher.forward(request, response);
 	}
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username = request.getParameter("username");
+        String username = request.getParameter("username").toLowerCase();
         String password = request.getParameter("password");
 
         if (!usuarioDao.checkUserCredentials(username, password)) {

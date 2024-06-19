@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.gastonalt.diariodepesas.dao.LocalidadDao;
 import com.gastonalt.diariodepesas.model.Localidad;
+import com.gastonalt.diariodepesas.model.Usuario;
 
 import javax.servlet.ServletConfig;
 
@@ -33,6 +34,11 @@ public class LocalidadServlet extends HttpServlet {
     String list="localidades-list.jsp";
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+	    if (usuario == null) {
+	        response.sendRedirect(request.getContextPath() + "/login.jsp");
+	        return;
+	    }
 		String action=request.getParameter("accion");
 		if(action == null) {
 			action = "";
@@ -102,7 +108,7 @@ public class LocalidadServlet extends HttpServlet {
 		String nombre = request.getParameter("nombre");
 		Localidad newLocalidad = new Localidad(cod_postal, nombre);
 		localidadDao.insertLocalidad(newLocalidad);
-		response.sendRedirect("LocalidadServlet?accion=list");
+		response.sendRedirect("localidades?accion=list");
 	}
 	
 	private void updateLocalidad(HttpServletRequest request, HttpServletResponse response) 
@@ -116,14 +122,14 @@ public class LocalidadServlet extends HttpServlet {
 
 		Localidad localidadActualizada = new Localidad(cod_postal, nombre);
 		localidadDao.updateLocalidad(localidadActualizada, cod_postal_anterior);
-		response.sendRedirect("LocalidadServlet?accion=list");
+		response.sendRedirect("localidades?accion=list");
 	}
 
 	private void deleteLocalidad(HttpServletRequest request, HttpServletResponse response) 
 			throws SQLException, IOException {
 		int cod_postal = Integer.parseInt(request.getParameter("cod_postal"));
 		localidadDao.deleteLocalidad(cod_postal);
-		response.sendRedirect("LocalidadServlet?accion=list");
+		response.sendRedirect("localidades?accion=list");
 	}
 
 }

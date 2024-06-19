@@ -35,6 +35,10 @@ public class DashboardServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+	    if (usuario == null) {
+	        response.sendRedirect(request.getContextPath() + "/login.jsp");
+	        return;
+	    }
 		RequestDispatcher dispatcher = request.getRequestDispatcher(dashboard);
 		List<Ejercicio> ejercicios = new ArrayList<Ejercicio>();
 		if(usuario != null) {

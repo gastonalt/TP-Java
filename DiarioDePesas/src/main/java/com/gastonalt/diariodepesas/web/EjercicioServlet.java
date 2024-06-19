@@ -36,9 +36,15 @@ public class EjercicioServlet extends HttpServlet {
     }
     
     String form = "ejercicio-form.jsp";
+    String resultadoForm = "resultado-form.jsp";
     String list = "ejercicio-list.jsp";
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+	    if (usuario == null) {
+	        response.sendRedirect(request.getContextPath() + "/login.jsp");
+	        return;
+	    }
 		String action=request.getParameter("accion");
 		if(action == null) {
 			action = "";
@@ -64,9 +70,23 @@ public class EjercicioServlet extends HttpServlet {
 			case "edit":
 				showEditForm(request, response);
 				break;
+			////// MÉTODOS DE RESULTADO, MOVER A SU PROPIO SERVLET //////
 			case "deleteResultado":
 				deleteResultado(request, response);
 				break;
+			case "editResultado":
+				showEditResultadoForm(request, response);
+				break;
+			case "updateResultado":
+				updateResultado(request, response);
+				break;
+			case "newResultado":
+				showNewResultadoForm(request, response);
+				break;
+			case "insertResultado":
+				insertResultado(request, response);
+				break;
+			//////
 			default:
 				listEjercicio(request, response);
 				break;
@@ -157,6 +177,8 @@ public class EjercicioServlet extends HttpServlet {
 		response.sendRedirect("./dashboard");
 	}
 	
+	////////////////////////////// MÉTODOS DE "RESULTADO" MOVER A SU PROPIO SERVLET //////////////////////////////
+	
 	private void deleteResultado(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
         int id_usuario = Integer.parseInt(request.getParameter("id_usuario"));
         String fechaHoraCargaResultado = request.getParameter("fechaHoraCargaResultado");
@@ -171,5 +193,79 @@ public class EjercicioServlet extends HttpServlet {
             throw new IllegalArgumentException("Formato de fecha y hora incorrecto: " + fechaHoraCargaResultado, e);
         }
     }
+	
+	private void showEditResultadoForm(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
+		Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
+        String fechaHoraCargaResultado = request.getParameter("fechaHoraCargaResultado");
+        int id_ejercicio = Integer.parseInt(request.getParameter("idEjercicio"));
+
+		Ejercicio ejercicioBD = ejercicioDao.getEjercicioById_ejercicio(id_ejercicio);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date parsedDate = dateFormat.parse(fechaHoraCargaResultado);
+            Timestamp timestamp = new Timestamp(parsedDate.getTime());
+    		Resultado resultadoBD = resultadoDao.getOneResultado(usuario.getId_usuario(), timestamp);
+    		RequestDispatcher dispatcher = request.getRequestDispatcher(resultadoForm);
+    		request.setAttribute("ejercicio", ejercicioBD);
+    		request.setAttribute("resultado", resultadoBD);
+    		dispatcher.forward(request, response);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Formato de fecha y hora incorrecto: " + fechaHoraCargaResultado, e);
+        }
+    }
+	
+	private void updateResultado(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
+		Resultado resultado;
+		int id_ejercicio = Integer.parseInt(request.getParameter("idEjercicio"));
+		Usuario loggedUser = (Usuario) request.getSession().getAttribute("usuario");
+        String fechaHoraCargaResultado = request.getParameter("fechaHoraCargaResultado");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date parsedDate;
+		try {
+			parsedDate = dateFormat.parse(fechaHoraCargaResultado);
+	        Timestamp timestamp = new Timestamp(parsedDate.getTime());
+			Ejercicio ejercicioBD = ejercicioDao.getEjercicioById_ejercicio(id_ejercicio);
+			if(ejercicioBD.getTipoEjercicio() == Ejercicio.TipoEjercicio.POR_REPETICION) {
+				int cantSeries = Integer.parseInt(request.getParameter("cantSeries"));
+				int cantRepeticiones = Integer.parseInt(request.getParameter("cantRepeticiones"));
+				Double pesoSoportado = Double.parseDouble(request.getParameter("pesoSoportado"));
+				resultado = new Resultado(loggedUser.getId_usuario(), timestamp ,ejercicioBD.getId_ejercicio(), cantSeries, cantRepeticiones, pesoSoportado);
+			}else{
+				int tiempoMinutos = Integer.parseInt(request.getParameter("tiempoMinutos"));
+				resultado = new Resultado(loggedUser.getId_usuario(), timestamp ,ejercicioBD.getId_ejercicio(), tiempoMinutos);
+			}
+			resultadoDao.updateResultado(resultado);
+			response.sendRedirect("./ejercicios?idEjercicio=" + id_ejercicio);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+    }
+	
+	private void showNewResultadoForm(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
+        int id_ejercicio = Integer.parseInt(request.getParameter("idEjercicio"));
+		Ejercicio ejercicioBD = ejercicioDao.getEjercicioById_ejercicio(id_ejercicio);
+		RequestDispatcher dispatcher = request.getRequestDispatcher(resultadoForm);
+		request.setAttribute("ejercicio", ejercicioBD);
+		dispatcher.forward(request, response);
+    }
+	
+	private void insertResultado(HttpServletRequest request, HttpServletResponse response) 
+			throws SQLException, IOException {
+		Resultado resultado;
+        int id_ejercicio = Integer.parseInt(request.getParameter("idEjercicio"));
+		Usuario loggedUser = (Usuario) request.getSession().getAttribute("usuario");
+		Ejercicio ejercicioBD = ejercicioDao.getEjercicioById_ejercicio(id_ejercicio);
+		if(ejercicioBD.getTipoEjercicio() == Ejercicio.TipoEjercicio.POR_REPETICION) {
+			int cantSeries = Integer.parseInt(request.getParameter("cantSeries"));
+			int cantRepeticiones = Integer.parseInt(request.getParameter("cantRepeticiones"));
+			Double pesoSoportado = Double.parseDouble(request.getParameter("pesoSoportado"));
+			resultado = new Resultado(loggedUser.getId_usuario(), new Timestamp(new Date().getTime()) , id_ejercicio, cantSeries, cantRepeticiones, pesoSoportado);
+		}else{
+			int tiempoMinutos = Integer.parseInt(request.getParameter("tiempoMinutos"));
+			resultado = new Resultado(loggedUser.getId_usuario(), new Timestamp(new Date().getTime()) , id_ejercicio, tiempoMinutos);
+		}
+		resultadoDao.insertResultado(resultado);
+		response.sendRedirect("./ejercicios?idEjercicio=" + id_ejercicio);
+	}
 
 }

@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import com.gastonalt.diariodepesas.dao.LocalidadDao;
 import com.gastonalt.diariodepesas.dao.UsuarioDao;
 import com.gastonalt.diariodepesas.model.Localidad;
@@ -36,6 +38,11 @@ public class SignupServlet extends HttpServlet {
     String signup="signup.jsp";
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Usuario usuarioLogged = (Usuario) request.getSession().getAttribute("usuario");
+	    if (usuarioLogged != null) {
+	        response.sendRedirect(request.getContextPath() + "/dashboard");
+	        return;
+	    }
 		List<Localidad> localidadesList = localidadDao.selectAllLocalidades();
 		request.setAttribute("localidadesList", localidadesList);
 		RequestDispatcher dispatcher = request.getRequestDispatcher(signup);
@@ -46,6 +53,7 @@ public class SignupServlet extends HttpServlet {
 		String password = request.getParameter("password");
 		String repassword = request.getParameter("repassword");
 		if(password.equals(repassword)) {
+			String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 			String username = request.getParameter("username");
 			String nombre = request.getParameter("nombre");
 			String apellido = request.getParameter("apellido");
@@ -53,7 +61,7 @@ public class SignupServlet extends HttpServlet {
 			int localidad = Integer.parseInt(request.getParameter("localidad"));
 			String direccion = request.getParameter("direccion");
 			String email = request.getParameter("email");
-			Usuario nuevoUsuario = new Usuario(username, password, nombre, apellido, fechaNac, direccion, email, new Localidad(localidad, null));
+			Usuario nuevoUsuario = new Usuario(username, hashedPassword, nombre, apellido, fechaNac, direccion, email, new Localidad(localidad, null));
 		    // Verificamos si el username ya está en uso
 		    if (usuarioDao.existeUsername(username)) {
 				List<Localidad> localidadesList = localidadDao.selectAllLocalidades();

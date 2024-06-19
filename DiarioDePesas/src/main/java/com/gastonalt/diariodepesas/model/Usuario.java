@@ -13,6 +13,7 @@ public class Usuario {
 	private String direccion;
 	private String email;
 	private Localidad localidad;
+	private boolean isAdmin;
 	
 	public Usuario(int id_usuario, String username, String password, String nombre, String apellido,
 			Date fechaNacimiento, String direccion, String email, Localidad localidad) {
@@ -38,6 +39,20 @@ public class Usuario {
 		this.fechaNacimiento = fechaNacimiento;
 		this.direccion = direccion;
 		this.email = email;
+		this.localidad = localidad;
+	}
+	
+	public Usuario(int id_usuario, String username, String nombre, String apellido,
+			Date fechaNacimiento, String direccion, String email, boolean isAdmin, Localidad localidad) {
+		super();
+		this.id_usuario = id_usuario;
+		this.username = username;
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.fechaNacimiento = fechaNacimiento;
+		this.direccion = direccion;
+		this.email = email;
+		this.isAdmin = isAdmin;
 		this.localidad = localidad;
 	}
 	
@@ -109,6 +124,12 @@ public class Usuario {
 	public void setLocalidad(Localidad localidad) {
 		this.localidad = localidad;
 	}
-	
+	// MÉTODO PARA EL ADMIN (ES QUIEN AGREGARÁ LOCALIDADES POR EJEMPLO)
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+    public void setAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
 
 }

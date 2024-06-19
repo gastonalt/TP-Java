@@ -21,7 +21,7 @@
 			<hr>
 			<div class="container text-left">
 
-				<a href="<%=request.getContextPath()%>/LocalidadServlet?accion=new" class="btn btn-primary">Agregar nueva localidad</a>
+				<a href="<%=request.getContextPath()%>/localidades?accion=new" class="btn btn-primary">Agregar nueva localidad</a>
 			</div>
 			<br>
 			<table class="table table-bordered">
@@ -39,9 +39,9 @@
 						<tr>
 							<td><c:out value="${loc.cod_postal}" /></td>
 							<td><c:out value="${loc.nombre}" /></td>
-							<td><a href="<%=request.getContextPath()%>/LocalidadServlet?accion=edit&cod_postal=<c:out value='${loc.cod_postal}' />">Editar</a>
+							<td><a href="<%=request.getContextPath()%>/localidades?accion=edit&cod_postal=<c:out value='${loc.cod_postal}' />">Editar</a>
 								&nbsp;&nbsp;&nbsp;&nbsp; <a
-								href="<%=request.getContextPath()%>/LocalidadServlet?accion=delete&cod_postal=<c:out value='${loc.cod_postal}' />">Eliminar</a></td>
+								href="<%=request.getContextPath()%>/localidades?accion=delete&cod_postal=<c:out value='${loc.cod_postal}' />">Eliminar</a></td>
 						</tr>
 					</c:forEach>
 		
