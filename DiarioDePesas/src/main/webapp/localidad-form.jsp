@@ -45,7 +45,7 @@
 						value="<c:out value='${localidad.nombre}' />" class="form-control"
 						name="nombre" required="required">
 				</fieldset>
-				<button type="submit" class="btn btn-success">Guardar</button>
+				<button type="submit" class="btn btn-primary">Guardar</button>
 				</form>
 			</div>
 		</div>
