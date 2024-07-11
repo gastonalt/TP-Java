@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <html>
 <head>
-<title>Iniciar sesión - DiarioDePesas</title>
+<title>DiarioDePesas</title>
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
 	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
@@ -15,27 +15,22 @@
 	<div class="container col-md-5">
 		<div class="card">
 			<div class="card-body">
-				<form action="<%=request.getContextPath()%>/login" method="post">
+				<form action="<%=request.getContextPath()%>/graph?key=showAllPesos" method="post">
 				<caption>
 					<h2>
-            			Iniciar sesión
+            			Ver progreso de usuarios
 					</h2>
 				</caption>
-				<c:if test="${credencialesIncorrectas != null}">
-					<div class="alert alert-danger" role="alert">
-					  <c:out value='${credencialesIncorrectas}' />
-					</div>
-				</c:if>
 					<fieldset class="form-group">
-						<label>Nombre de usuario</label> <input type="text"
+						<label>Fecha inicio</label> <input type="date"
 							class="form-control"
-							name="username" required="required">
+							name="fechaInicio" required="required">
 	
-						<label>Contraseña</label> <input type="password"
+						<label>Fecha fin</label> <input type="date"
 							class="form-control"
-							name="password" required="required">
+							name="fechaFin" required="required">
 					</fieldset>
-					<button type="submit" class="btn btn-primary">Iniciar sesión</button>
+					<button type="submit" class="btn btn-primary">Generar gráfica</button>
 				</form>
 			</div>
 		</div>

@@ -2,6 +2,8 @@ package com.gastonalt.diariodepesas.web;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -19,6 +21,7 @@ import com.gastonalt.diariodepesas.model.Ejercicio;
 import com.gastonalt.diariodepesas.model.HistorialPeso;
 import com.gastonalt.diariodepesas.model.Resultado;
 import com.gastonalt.diariodepesas.model.Usuario;
+import com.gastonalt.diariodepesas.model.UsuarioHistorialPesoDTO;
 import com.gastonalt.diariodepesas.model.Ejercicio.TipoEjercicio;
 
 @WebServlet("/graph")
@@ -36,6 +39,8 @@ public class graphServlet extends HttpServlet {
     }
     
     String graph = "graph.jsp";
+    String aug = "all-users-graph.jsp";
+    String sgr = "set-graph-range.jsp";
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Usuario usuario = (Usuario) request.getSession().getAttribute("usuario");
@@ -55,6 +60,12 @@ public class graphServlet extends HttpServlet {
 			case "ejercicio":
 				historialEjercicio(request, response);
 				break;
+			case "showAllPesos":
+				historialAllPesos(request, response);
+				break;
+			case "setRangoPesos":
+				setRangoPesos(request, response);
+				break;
 			default:
 				// signUp(request, response);
 				break;
@@ -68,6 +79,47 @@ public class graphServlet extends HttpServlet {
 	        e.printStackTrace();
 	        throw new ServletException("Servlet Error", e);
 	    }
+	}
+	
+	private void setRangoPesos(HttpServletRequest request, HttpServletResponse response) 
+			throws SQLException, IOException, ServletException {
+		boolean isAdmin = ((Usuario) request.getSession().getAttribute("usuario")).isAdmin();
+	    if (!isAdmin) {
+	        response.sendRedirect(request.getContextPath());
+	        return;
+	    }
+	    RequestDispatcher dispatcher = request.getRequestDispatcher(sgr);
+	    dispatcher.forward(request, response);
+	}
+	
+	private void historialAllPesos(HttpServletRequest request, HttpServletResponse response) 
+			throws SQLException, IOException, ServletException {
+		boolean isAdmin = ((Usuario) request.getSession().getAttribute("usuario")).isAdmin();
+	    if (!isAdmin) {
+	        response.sendRedirect(request.getContextPath() + "/login.jsp");
+	        return;
+	    }
+	    String fechaInicioStr = request.getParameter("fechaInicio");
+	    String fechaFinStr = request.getParameter("fechaFin");
+	    
+	    DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	    DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+	    
+	    LocalDate fechaInicioDate = LocalDate.parse(fechaInicioStr, inputFormatter);
+	    LocalDate fechaFinDate = LocalDate.parse(fechaFinStr, inputFormatter);
+
+	    LocalDateTime fechaInicio = fechaInicioDate.atStartOfDay();
+	    LocalDateTime fechaFin = fechaFinDate.atTime(23, 59, 59);
+
+	    String fechaInicioFormatted = fechaInicioDate.format(outputFormatter);
+	    String fechaFinFormatted = fechaFinDate.format(outputFormatter);
+	    
+	    List<UsuarioHistorialPesoDTO> historialPesos = historialPesoDao.selectAllHistorialPesos(fechaInicio, fechaFin);
+	    request.setAttribute("usuariosHistorial", historialPesos);
+	    request.setAttribute("fechaInicioStr", fechaInicioFormatted);
+	    request.setAttribute("fechaFinStr", fechaFinFormatted);
+	    RequestDispatcher dispatcher = request.getRequestDispatcher(aug);
+	    dispatcher.forward(request, response);
 	}
 	
 	private void historialPeso(HttpServletRequest request, HttpServletResponse response) 
