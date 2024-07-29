@@ -50,14 +50,14 @@
 				        Registrado el: <fmt:formatDate value="${res.fechaHoraCargaResultado}" pattern="dd/MM/yyyy HH:mm:ss" />
 				      </p>
 				      <div>
-	   			          <a href="?accion=editResultado&idEjercicio=<c:out value="${ejercicio.id_ejercicio}" />&fechaHoraCargaResultado=<c:out value="${res.fechaHoraCargaResultado}" />">Editar</a>
+	   			          <a href="resultados?accion=edit&idEjercicio=<c:out value="${ejercicio.id_ejercicio}" />&fechaHoraCargaResultado=<c:out value="${res.fechaHoraCargaResultado}" />">Editar</a>
        					  <a href="javascript:void(0);" style="margin-left: 16px" onclick="openDeleteResultadoModal('<c:out value="${res.idUsuario}"/>', '<c:out value="${res.fechaHoraCargaResultado}"/>')">Eliminar</a>
    			          </div>
 			      </div>
 			    </div>
 			</c:forEach>
 	  	</div>
-   	<p><a class="btn btn-primary btn-lg" href="?accion=newResultado&idEjercicio=<c:out value="${ejercicio.id_ejercicio}" />" role="button">Agregar un nuevo resultado »</a></p>
+   	<p><a class="btn btn-primary btn-lg" href="resultados?accion=new&idEjercicio=<c:out value="${ejercicio.id_ejercicio}" />" role="button">Agregar un nuevo resultado »</a></p>
    	<button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">Eliminar ejercicio</button>
  	      <!-- Modal eliminar-ejercicio -->
 		<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -92,7 +92,7 @@
 	          <span aria-hidden="true">&times;</span>
 	        </button>
 	      </div>
-	      <form action="?accion=deleteResultado" method="post">
+	      <form action="resultados?accion=delete" method="post">
 	        <div class="modal-body">
 	          ¿Está seguro que desea eliminar este resultado? Esta acción no puede deshacerse.<br>
            	  <c:if test="${resultadoSize == 1}"><b>Atención! Al eliminar este peso también eliminará el ejercicio.</b></c:if>
