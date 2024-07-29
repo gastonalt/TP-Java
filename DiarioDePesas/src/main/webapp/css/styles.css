@@ -20,7 +20,8 @@
 
 .noEjerciciosFoundBackdrop{
 	background-image: url('../assets/not-found.webp');
-    background-size: cover;
+    background-size: contain;
+	background-repeat: no-repeat;
     width:70vw;
     background-position: center;
     height: 50vh;

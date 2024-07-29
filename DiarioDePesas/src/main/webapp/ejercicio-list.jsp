@@ -75,7 +75,7 @@
 			      </div>
 			      <div class="modal-footer">
 			        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-			        <button type="submit" class="btn btn-danger">Eliminar modal</button>
+			        <button type="submit" class="btn btn-danger">Eliminar ejercicio</button>
 			      </div>
 		      </form>
 		    </div>
