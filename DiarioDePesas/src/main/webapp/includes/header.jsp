@@ -1,3 +1,5 @@
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <%@page import="com.gastonalt.diariodepesas.model.Usuario"%>
 <%
     Usuario usuario = (Usuario) session.getAttribute("usuario");

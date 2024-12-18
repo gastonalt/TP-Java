@@ -94,15 +94,32 @@
 						</svg>
 		            </c:when>
 		        </c:choose>
-			      <div class="d-flex justify-content-between align-items-center w-100">
-	   			      <p class="media-body pb-3 pl-3 mb-0 small lh-125 border-bottom border-gray">
-				        <strong class="d-block text-gray-dark"><c:out value="${ejer.descripcion}" /></strong>
-				        <c:if test="${ejer.tipoEjercicio == 'POR_REPETICION'}"><b><c:out value="${ejer.ultimoResultado.pesoSoportado}" /> Kg.</b></c:if> <c:if test="${ejer.tipoEjercicio == 'POR_TIEMPO'}"><b><c:out value="${ejer.ultimoResultado.tiempoMinutos}" /> min.</b></c:if> - Registrado el: <fmt:formatDate value="${ejer.ultimoResultado.fechaHoraCargaResultado}" pattern="dd/MM/yyyy HH:mm:ss" />
-				      </p>
-				      <a href="./graph?key=ejercicio&idEjercicio=<c:out value="${ejer.id_ejercicio}" />">Rendimiento</a>
-   			          <a href="./ejercicios?accion=edit&idEjercicio=<c:out value="${ejer.id_ejercicio}" />" style="margin-left: 16px">Modificar ejercicio</a>
-			          <a href="./ejercicios?idEjercicio=<c:out value="${ejer.id_ejercicio}" />" style="margin-left: 16px">Agregar nuevo resultado</a>
-			      </div>
+					<div class="d-flex flex-column flex-lg-row justify-content-between align-items-start w-100">
+					  <p class="media-body pb-3 pl-3 mb-0 small lh-125 border-bottom border-gray">
+					    <strong class="d-block text-gray-dark"><c:out value="${ejer.descripcion}" /></strong>
+					    <c:if test="${ejer.tipoEjercicio == 'POR_REPETICION'}">
+					      <b><c:out value="${ejer.ultimoResultado.pesoSoportado}" /> Kg.</b>
+					    </c:if> 
+					    <c:if test="${ejer.tipoEjercicio == 'POR_TIEMPO'}">
+					      <b><c:out value="${ejer.ultimoResultado.tiempoMinutos}" /> min.</b>
+					    </c:if>
+					    - Registrado el: 
+					    <fmt:formatDate value="${ejer.ultimoResultado.fechaHoraCargaResultado}" pattern="dd/MM/yyyy HH:mm:ss" />
+					  </p>
+					
+					  <!-- Enlaces -->
+					  <div class="d-flex flex-column flex-lg-row mt-2 mt-lg-0">
+					    <a href="./graph?key=ejercicio&idEjercicio=<c:out value='${ejer.id_ejercicio}' />" class="mb-4 mt-2 mr-2 mb-lg-0">
+					      Rendimiento
+					    </a>
+					    <a href="./ejercicios?accion=edit&idEjercicio=<c:out value='${ejer.id_ejercicio}' />" class="mb-4 mt-2 mr-2 mb-lg-0">
+					      Modificar ejercicio
+					    </a>
+					    <a href="./ejercicios?idEjercicio=<c:out value='${ejer.id_ejercicio}' />" class="mb-4 mt-2 mr-2 mb-lg-0">
+					      Agregar nuevo resultado
+					    </a>
+					  </div>
+					</div>
 			    </div>
 			</c:forEach>
 	  	</div>

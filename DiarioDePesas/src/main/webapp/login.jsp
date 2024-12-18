@@ -12,7 +12,7 @@
 <body>
 	<%@ include file="includes/header.jsp" %>
 	<br>
-	<div class="container col-md-5">
+	<div class="container col-12 col-sm-10 col-md-8 col-lg-5">
 		<div class="card">
 			<div class="card-body">
 				<form action="<%=request.getContextPath()%>/login" method="post">
